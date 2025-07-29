@@ -64,6 +64,16 @@ export const authAPI = {
   
   deleteAccount: () => 
     api.delete('/users/me'),
+  
+  // Password reset functionality
+  forgotPassword: (email) => 
+    api.post('/users/forgot-password', { email }),
+  
+  resetPassword: (token, newPassword) => 
+    api.post('/users/reset-password', { token, newPassword }),
+  
+  verifyResetToken: (token) => 
+    api.get(`/users/verify-reset-token/${token}`),
 };
 
 // Profiles API calls

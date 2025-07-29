@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { authAPI } from '../services/api';
+import ForgotPassword from './ForgotPassword';
 import './Auth.css';
 
 const Auth = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,6 +34,10 @@ const Auth = ({ onLogin }) => {
       setLoading(false);
     }
   };
+
+  if (showForgotPassword) {
+    return <ForgotPassword onBackToLogin={() => setShowForgotPassword(false)} />;
+  }
 
   return (
     <div className="auth-container">
@@ -68,6 +74,18 @@ const Auth = ({ onLogin }) => {
             {loading ? 'Loading...' : (isLogin ? 'Login' : 'Register')}
           </button>
         </form>
+        
+        {isLogin && (
+          <p className="forgot-password-link">
+            <button 
+              type="button" 
+              onClick={() => setShowForgotPassword(true)}
+              className="switch-button"
+            >
+              Forgot Password?
+            </button>
+          </p>
+        )}
         
         <p className="auth-switch">
           {isLogin ? "Don't have an account? " : "Already have an account? "}

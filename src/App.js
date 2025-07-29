@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Auth from './components/Auth';
+import ResetPassword from './components/ResetPassword';
 import { profilesAPI, matchesAPI, authAPI } from './services/api';
 
 function App() {
@@ -289,52 +291,63 @@ function App() {
     </div>
   );
 
-  // Show authentication if user is not logged in
-  if (!user) {
-    return <Auth onLogin={handleLogin} />;
-  }
+  // Main app content
+  const AppContent = () => {
+    if (!user) {
+      return <Auth onLogin={handleLogin} />;
+    }
+
+    return (
+      <div className="bumble-app">
+        <div className="header">
+          <h1 className="bumble-title">Bumble Clone</h1>
+          <div className="user-info">
+            <span>Welcome, {user.email}</span>
+            <button onClick={handleLogout} className="logout-btn">Logout</button>
+          </div>
+        </div>
+        
+        {error && (
+          <div className="error-banner" onClick={() => setError('')}>
+            {error} (Click to dismiss)
+          </div>
+        )}
+        
+        <div className="navigation">
+          <button 
+            className={`nav-btn ${currentSection === 'swipe' ? 'active' : ''}`}
+            onClick={() => setCurrentSection('swipe')}
+          >
+            💛 Swipe
+          </button>
+          <button 
+            className={`nav-btn ${currentSection === 'matches' ? 'active' : ''}`}
+            onClick={() => setCurrentSection('matches')}
+          >
+            💕 Matches ({matches.length}/4)
+          </button>
+          <button 
+            className={`nav-btn ${currentSection === 'liked' ? 'active' : ''}`}
+            onClick={() => setCurrentSection('liked')}
+          >
+            ❤️ Liked ({likedProfiles.length})
+          </button>
+        </div>
+
+        {currentSection === 'swipe' && renderSwipeSection()}
+        {currentSection === 'matches' && renderMatchesSection()}
+        {currentSection === 'liked' && renderLikedSection()}
+      </div>
+    );
+  };
 
   return (
-    <div className="bumble-app">
-      <div className="header">
-        <h1 className="bumble-title">Bumble Clone</h1>
-        <div className="user-info">
-          <span>Welcome, {user.email}</span>
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
-        </div>
-      </div>
-      
-      {error && (
-        <div className="error-banner" onClick={() => setError('')}>
-          {error} (Click to dismiss)
-        </div>
-      )}
-      
-      <div className="navigation">
-        <button 
-          className={`nav-btn ${currentSection === 'swipe' ? 'active' : ''}`}
-          onClick={() => setCurrentSection('swipe')}
-        >
-          💛 Swipe
-        </button>
-        <button 
-          className={`nav-btn ${currentSection === 'matches' ? 'active' : ''}`}
-          onClick={() => setCurrentSection('matches')}
-        >
-          💕 Matches ({matches.length}/4)
-        </button>
-        <button 
-          className={`nav-btn ${currentSection === 'liked' ? 'active' : ''}`}
-          onClick={() => setCurrentSection('liked')}
-        >
-          ❤️ Liked ({likedProfiles.length})
-        </button>
-      </div>
-
-      {currentSection === 'swipe' && renderSwipeSection()}
-      {currentSection === 'matches' && renderMatchesSection()}
-      {currentSection === 'liked' && renderLikedSection()}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/" element={<AppContent />} />
+      </Routes>
+    </Router>
   );
 }
 
